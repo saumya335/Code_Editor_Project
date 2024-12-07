@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Coderative{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> <!-- Add this line -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #d8eec8;
+        }
+
+        header {
+            background-color: #99cc99; /* Change to match footer */
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-and-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            margin-right: 1rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #333;
+            font-style: italic;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 1rem;
+        }
+
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .profile-icon {
+            font-size: 1.5rem; /* Adjust size as needed */
+            color: #333;
+            margin-left: 1rem; /* Spacing for the icon */
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        .welcome-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-text {
+            max-width: 50%;
+        }
+
+        .welcome-text h2 {
+            font-size: 2.5rem;
+            color: #4a6b4a;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 20px;
+        }
+
+        .code-here-btn, .find-team-btn {
+            background-color: #6c8b6c;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .code-here-btn:hover, .find-team-btn:hover {
+            background-color: #557755;
+            transform: translateY(-3px);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-here-btn:active, .find-team-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .welcome-text p {
+            font-size: 1.3rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .collab-image {
+            width: 45%;
+            max-width: 400px;
+            height: auto;
+        }
+
+        .language-icons {
+            margin-top: 2rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .language-icons h3 {
+            font-size: 2rem;
+            color: #4a6b4a;
+            margin-bottom: 1.5rem;
+        }
+
+        .icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .language-icon {
+            width: 80px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .language-icon:hover {
+            transform: scale(1.15);
+        }
+
+        footer {
+            background-color: #99cc99;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-and-title">
+            <img class="logo" src="{% static 'accounts/images/logo.png' %}" alt="Collaborative coding graphic">
+            <div>
+                <span class="title">Coderative</span><br>
+                <span class="subtitle">{Collab & Code}</span>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'profile' %}" class="profile-icon"><i class="bi bi-person-circle"></i></a></li> <!-- Profile icon added here -->
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="welcome-section">
+            <div class="welcome-text">
+                <h2>Welcome to the Collaborative Code Editor!</h2>
+                <p><span>Collaborate</span> in real-time with your team across multiple languages!</p>
+
+                <!-- Add buttons for "Find Your Team" and "Start Coding" -->
+                <div class="btn-container">
+                    <button class="find-team-btn" onclick="window.location.href='{% url 'collaborate' %}'">Find Your Team</button>
+                    <button class="code-here-btn" onclick="window.location.href='{% url 'codeEditor' %}'">Start Coding</button>
+                </div>
+            </div>
+            <img class="collab-image" src="{% static 'accounts/images/typing.gif' %}" alt="Collaborative coding graphic">
+        </div>
+
+        <div class="language-icons">
+            <h3>Supported Languages</h3>
+            <div class="icons">
+                <img src="{% static 'accounts/images/python.png' %}" alt="Python" title="Python" class="language-icon">
+                <img src="{% static 'accounts/images/javascript.png' %}" alt="JavaScript" title="JavaScript" class="language-icon">
+                <img src="{% static 'accounts/images/java.png' %}" alt="Java" title="Java" class="language-icon">
+                <img src="{% static 'accounts/images/cpp.png' %}" alt="C++" title="C++" class="language-icon">
+                <!-- Add more icons as needed -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Coderative. All rights reserved.</p>
+    </footer>
+</body>
+</html>

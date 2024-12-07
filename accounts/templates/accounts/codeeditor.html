@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coderative - Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" type="text/javascript"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: #d8eec8; }
+        header { position: fixed; top: 0; width: 100%; background-color: #99cc99; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); }
+        .logo-and-title { display: flex; align-items: center; }
+        .logo { height: 50px; margin-right: 1rem; }
+        .title { font-size: 2rem; color: #333; }
+        nav ul { list-style: none; display: flex; align-items: center; }
+        nav ul li { margin-left: 1rem; position: relative; }
+        nav ul li a { color: #333; text-decoration: none; font-size: 1.5rem; display: flex; align-items: center; }
+        nav ul li a:hover { color: #557755; }
+        .tooltip { position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 0.5rem; border-radius: 5px; font-size: 0.8rem; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; }
+        .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
+        nav ul li:hover .tooltip { opacity: 1; visibility: visible; }
+        main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; margin-top: 100px; }
+        .editor-container { width: 80%; background-color: #f0f0f0; padding: 1rem; border-radius: 10px; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1); }
+        .project-select-container { display: flex; align-items: center; margin-bottom: 1rem; }
+        .project-select, .language-select { font-size: 1.2rem; padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd; margin-right: 1rem; }
+        .run-icon, .clear-icon, .save-icon, .load-icon, .chat-icon { cursor: pointer; font-size: 1.5rem; color: #333; margin-left: 1rem; transition: transform 0.2s, color 0.2s; }
+        .run-icon:hover, .clear-icon:hover, .save-icon:hover, .load-icon:hover, .chat-icon:hover { transform: scale(1.2); color: #557755; }
+        .code-editor { position: relative; height: 500px; }
+        .console-output { margin-top: 1rem; background-color: #1e1e1e; color: #00ff00; padding: 1rem; border-radius: 5px; font-family: monospace; height: 150px; overflow-y: auto; white-space: pre-wrap; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1); }
+        footer { position: fixed; bottom: 0; left: 0; right: 0; background-color: #99cc99; color: white; text-align: center; padding: 1rem; width: 100%; }
+        footer p { margin: 0; }
+
+        /* Chat container styles */
+        #chat-container { width: 80%; margin-top: 2rem; background-color: #f9f9f9; padding: 1rem; border-radius: 10px; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1); display: none; }
+        #chat-box { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background-color: #e5e5e5; border-radius: 5px; }
+        #message-input { width: 100%; padding: 10px; margin-top: 1rem; border: 1px solid #ccc; border-radius: 5px; }
+        #send-message { margin-top: 0.5rem; padding: 10px 20px; background-color: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #send-message:hover { background-color: #45a049; }
+
+        @media (max-width: 768px) { main { width: 95%; } .project-select, .language-select { width: 100%; margin-bottom: 0.5rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-and-title">
+            <img class="logo" src="{% static 'accounts/images/logo.png' %}" alt="Collaborative coding graphic">
+            <div>
+                <span class="title">Coderative</span><br>
+                <span class="subtitle">{Collab & Code}</span>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{% url 'home' %}"><i class="fas fa-home"></i></a>
+                    <div class="tooltip">Home</div>
+                </li>
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'profile' %}"><i class="fas fa-user-circle"></i></a>
+                    {% else %}
+                        <a href="{% url 'login' %}" style="color: #ff0000;"><i class="fas fa-user-circle"></i></a>
+                    {% endif %}
+                    <div class="tooltip">Profile</div>
+                </li>
+                <li>
+                    <a href="#" id="onlineUsersBtn" onmouseover="showOnlineUsers()"><i class="fas fa-user-friends"></i></a>
+                    <div class="tooltip">Online Users</div>
+                </li>
+                <li>
+                    <a href="#" id="offlineUsersBtn" onmouseover="showOfflineUsers()"><i class="fas fa-user-slash"></i></a>
+                    <div class="tooltip">Offline Users</div>
+                </li>
+                <li>
+                    <a href="#" id="teamMembersBtn"><i class="fas fa-users"></i></a>
+                    <div class="tooltip">Collaborators</div>
+                </li>
+                <li>
+                    <a href="#" onclick="toggleChatBox()"><i class="fas fa-comment chat-icon"></i></a>
+                    <div class="tooltip">Chat</div>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-cog"></i></a>
+                    <div class="tooltip">Settings</div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="editor-container">
+            <div class="project-select-container">
+                <select class="project-select">
+                    <option value="" disabled selected>Select Project</option>
+                    <option value="project1">Project 1</option>
+                    <option value="project2">Project 2</option>
+                </select>
+
+                <select class="language-select" id="languageSelect">
+                    <option value="" disabled selected>Select Language</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                </select>
+
+                <div>
+                    <span class="run-icon" onclick="runCode()">▶</span>
+                    <span class="clear-icon" onclick="clearCode()">🗑️</span>
+                    <span class="save-icon" onclick="saveCode()">💾</span>
+                    <span class="load-icon" onclick="loadCode()">📂</span>
+                </div>
+            </div>
+
+            <div class="code-editor" id="codeEditor"></div>
+            <div class="console-output" id="consoleOutput">
+                <p>Console output will appear here...</p>
+            </div>
+        </div>
+
+        <!-- Chat Section -->
+        <div id="chat-container">
+            <div id="chat-box"></div>
+            <textarea id="message-input" placeholder="Type a message"></textarea>
+            <button id="send-message" onclick="sendMessage()">Send</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Coderative - All Rights Reserved</p>
+    </footer>
+
+    <script>
+        var editor = ace.edit("codeEditor");
+        editor.setTheme("ace/theme/monokai");
+
+        document.getElementById('languageSelect').addEventListener('change', function () {
+            var language = this.value;
+            var mode = "text"; // default mode
+            if (language === "python") mode = "python";
+            else if (language === "javascript") mode = "javascript";
+            else if (language === "java") mode = "java";
+            editor.session.setMode("ace/mode/" + mode);
+        });
+
+        function runCode() {
+            const code = editor.getValue();
+            document.getElementById("consoleOutput").textContent = "Running code...\n" + code; // simulate running code
+        }
+
+        function clearCode() {
+            editor.setValue("");
+            document.getElementById("consoleOutput").textContent = "";
+        }
+
+        function saveCode() {
+            // Implement save functionality here
+            alert('Code saved!');
+        }
+
+        function loadCode() {
+            // Implement load functionality here
+            alert('Code loaded!');
+        }
+
+        function toggleChatBox() {
+            var chatContainer = document.getElementById("chat-container");
+            chatContainer.style.display = (chatContainer.style.display === "none" || chatContainer.style.display === "") ? "block" : "none";
+        }
+
+        function showOnlineUsers() {
+            alert('Online Users: User1, User2, User3');
+        }
+
+        function showOfflineUsers() {
+            alert('Offline Users: User4, User5');
+        }
+
+        function sendMessage() {
+            var message = document.getElementById("message-input").value;
+            var chatBox = document.getElementById("chat-box");
+            var newMessage = document.createElement("p");
+            newMessage.textContent = message;
+            chatBox.appendChild(newMessage);
+            document.getElementById("message-input").value = "";  // Clear input
+        }
+    </script>
+</body>
+</html>

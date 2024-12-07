@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborate - Coderative</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* Base body styling */
+        body {
+            background-color: #f4f4f9; /* Assuming this is the same as your other pages */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: #6c8b6c; /* Use the same header color */
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-and-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            margin-right: 1rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            color: #333; /* Ensure text is legible */
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #333;
+            font-style: italic;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 1rem;
+        }
+
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .profile-icon {
+            font-size: 1.5rem;
+            color: #333;
+            margin-left: 1rem;
+        }
+
+        /* Main content layout */
+        main {
+            margin-top: 100px; /* To account for the fixed header */
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between; /* Flexbox for layout */
+        }
+
+        .container {
+            width: 70%; /* Adjust width for main content */
+            max-width: 1200px;
+            background-color: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Search bar */
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar input {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            border: 2px solid #6c8b6c; /* Same color as header */
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+
+        .search-placeholder {
+            color: #999; /* Lighter color for placeholder */
+        }
+
+        /* Trending section */
+        .trending-section {
+            margin-top: 30px;
+        }
+
+        .trending-section h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .trending-card {
+            background-color: #6c8b6c; /* Use the same background color */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .trending-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            color: white; /* Ensure text is legible */
+        }
+
+        .btn-collab {
+            background-color: #557755; /* Button color matching the theme */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-collab:hover {
+            background-color: #445544; /* Darker shade on hover */
+        }
+
+        /* Collaborators suggestions */
+        .collaborators-suggestions {
+            width: 25%; /* Sidebar width */
+            margin-left: 20px; /* Space between main content and sidebar */
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .collaborator-card {
+            background-color: #f4f4f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .collaborator-card h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .collaborator-card p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #6c8b6c; /* Use the same footer color */
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-and-title">
+            <img class="logo" src="{% static 'accounts/images/logo.png' %}" alt="Coderative Logo">
+            <div>
+                <span class="title">Coderative</span><br>
+                <span class="subtitle">{Collab & Code}</span>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}" class="home-icon"><i class="bi bi-house"></i></a></li>
+                <li><a href="{% url 'profile' %}" class="profile-icon"><i class="bi bi-person-circle"></i></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main>
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search by using tags...">
+            </div>
+
+            <!-- Trending Section -->
+            <div class="trending-section">
+                <h2>Trending Collaborations</h2>
+                <div class="trending-card">
+                    <h4>Python for Data Science</h4>
+                    <button class="btn-collab">Join Now</button>
+                </div>
+                <div class="trending-card">
+                    <h4>Web Development with JavaScript</h4>
+                    <button class="btn-collab">Join Now</button>
+                </div>
+                <div class="trending-card">
+                    <h4>Machine Learning in Java</h4>
+                    <button class="btn-collab">Join Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collaborators Suggestions -->
+        <aside class="collaborators-suggestions">
+            <h2>Suggested Collaborators Who Match Your Vibe</h2>
+            <div class="collaborator-card">
+                <h5>John Doe</h5>
+                <p>JavaScript Developer</p>
+            </div>
+            <div class="collaborator-card">
+                <h5>Jane Smith</h5>
+                <p>Python Enthusiast</p>
+            </div>
+            <div class="collaborator-card">
+                <h5>Emily Johnson</h5>
+                <p>Data Analyst</p>
+            </div>
+            <div class="collaborator-card">
+                <h5>Michael Brown</h5>
+                <p>Web Designer</p>
+            </div>
+            <!-- Add more collaborator suggestions as needed -->
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Coderative. All rights reserved.</p>
+    </footer>
+</body>
+</html>
